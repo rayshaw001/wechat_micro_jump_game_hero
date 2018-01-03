@@ -149,13 +149,12 @@ class Otsu(object):
             pow(self.center_pos[0] - self.hero_pos[0], 2) + \
             pow(self.center_pos[1] - self.hero_pos[1], 2)
         ))
-
-        length_time = line_length * 1.5
+        random_percent = random.randint(13988,14111) / 10000.0
+        length_time = line_length * random_percent
 
         holding = min(950, max(length_time, 300))
 
         print('length, duration, holding: ', line_length, length_time, holding)
-        print()
 
         return int(holding)
 
@@ -170,9 +169,7 @@ def run_cmd(cmd):
     return stdout, stderr
 
 
-# directory where screenshot image will be saved in.
-# if you use Windows, e.g 'c:/wechat_micro_jump_game_screenshot'
-screenshot_directory = '/tmp/wechat_micro_jump_game_screenshot'
+screenshot_directory = 'C:/Users/Ray/Desktop/Ant/wechat_micro_jump_game_hero/tmp'
 if not osp.exists(screenshot_directory):
     os.makedirs(screenshot_directory)
 
@@ -207,12 +204,19 @@ while True:
             rand_y = lambda: random.randint(0, otsu.h * 3 / 4)
             x1, y1 = rand_x(), rand_y()
             x2, y2 = rand_x(), rand_y()
-
+            random_sleep = lambda: random.randint(0.5, otsu.w)
             run_cmd('adb shell input swipe {0} {1} {2} {3} {4}'.format(
                 x1, y1, x2, y2, holding))
-            time.sleep(2)
+            time.sleep(1)
+    #except Interrupt:
+        #run_cmd('adb shell input swipe 500 1600')
     except KeyboardInterrupt:
+        print('keyboard interrupt')
         raise KeyboardInterrupt
     except:
+        print('except interrupt')
+        jump_times = jump_times = itertools.count(0)
+        run_cmd('adb shell input tap 500 1600')
         traceback.print_exc()
-        time.sleep(2)
+        time.sleep(1)
+
