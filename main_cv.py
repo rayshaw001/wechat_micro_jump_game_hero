@@ -42,14 +42,12 @@ class Otsu(object):
         self.thresh = cv2.Canny(self.im, 20, 70)
 
         cv2.imwrite(path + '.canny.png', self.thresh)
-
         self.hero_pos = tuple(self.find_hero())
         is_hero_on_left = self.hero_pos[0] < self. w / 2
         print('hero pos:', self.hero_pos)
 
         self.top_most = self.find_top_most(is_hero_on_left)
-        print('top most pos：', self.top_most)
-
+        print('top most pos ', self.top_most)
     def find_hero(self):
         """find bottle by purple color"""
 
@@ -60,7 +58,6 @@ class Otsu(object):
             (b == self.hero_color[2])
         )
         return [int(i) for i in numpy.mean(hp, axis=0)]
-
     def find_top_most(self, is_hero_on_left):
         hero_radius = 50
         if is_hero_on_left:
@@ -75,7 +72,6 @@ class Otsu(object):
             step = 1
 
         from_y, to_y = self.h / 4, self.hero_pos[1]
-
         for y in range(from_y, to_y):
             for x in range(from_x, to_x, step):
                 if self.thresh[y, x] == 255:
@@ -83,26 +79,23 @@ class Otsu(object):
 
     def get_center_pos(self):
         distance_x = numpy.abs(self.top_most[0] - self.hero_pos[0])
-
         distance_y = distance_x / numpy.sqrt(3)
         distance_y = max(self.hero_pos[1] - self.top_most[1] - 100, distance_y)
-
         return self.top_most[0], int(self.hero_pos[1] - distance_y)
 
     def get_holding(self):
         center_pos = self.get_center_pos()
         print('next block center pos:', center_pos)
-
         distance = int(numpy.sqrt(
             pow(center_pos[0] - self.hero_pos[0], 2) + \
             pow(center_pos[1] - self.hero_pos[1], 2)
         ))
-
         print('distance:', distance)
+        random_percent = numpy.random.randint(13988,14111) / 10000.0
+        length_time = distance * random_percent
 
-        holding = int(min(950, max(distance * 1.5, 300)))
+        holding = int(min(950, max(length_time, 300)))
         print('holding: ', holding)
-        print()
 
         # dray images for debugging
         fn = osp.split(self.path)[-1]
@@ -113,9 +106,7 @@ class Otsu(object):
         self.im[self.hero_pos[1]:self.hero_pos[1] + 3, :] = self.GREEN
         cv2.line(self.im, self.hero_pos, center_pos, self.BLACK, 2)
         cv2.imwrite(self.path + '.debug.png', self.im)
-
         return holding
-
 
 def run_cmd(cmd):
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE,
@@ -129,10 +120,9 @@ def run_cmd(cmd):
 
 # directory where screenshot image will be saved in.
 # if you use Windows, e.g 'c:/wechat_micro_jump_game_screenshot'
-screenshot_directory = '/tmp/wechat_micro_jump_game_screenshot'
+screenshot_directory = 'C:/Users/Ray/Desktop/Ant/wechat_micro_jump_game_hero/tmp'
 if not osp.exists(screenshot_directory):
     os.makedirs(screenshot_directory)
-
 
 jump_times = itertools.count(0)
 while True:
@@ -164,12 +154,13 @@ while True:
             rand_y = lambda: numpy.random.randint(0, otsu.h * 3 / 4)
             x1, y1 = rand_x(), rand_y()
             x2, y2 = rand_x(), rand_y()
-
             run_cmd('adb shell input swipe {0} {1} {2} {3} {4}'.format(
                 x1, y1, x2, y2, holding))
             time.sleep(1.3 + numpy.random.random())
     except KeyboardInterrupt:
         raise KeyboardInterrupt
     except:
+        jump_times = jump_times = itertools.count(0)
+        run_cmd('adb shell input tap 500 1600')
         traceback.print_exc()
-        time.sleep(2)
+        time.sleep(1)
