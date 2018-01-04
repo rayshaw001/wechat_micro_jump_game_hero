@@ -6,10 +6,29 @@
 
 克隆、fork、下载，即代表您遵循此声明。
 
+
+## 目录结构说明
+
+    .
+    ├── game.beautified.js  # 美化后的小游戏源码[移除了 three.js 的库代码]
+    ├── game_js_beautifier.py  # 美化 game.js
+    ├── LICENSE
+    ├── main_cv.py  # 自动跳 opencv 版本
+    ├── main.py  # 自动跳 pillow 版本
+    ├── Pipfile
+    ├── Pipfile.lock
+    └── README.md
+
+
 ## 原理说明
 
-![计算](http://upload-images.jianshu.io/upload_images/576195-fd957e0c51330db5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+普通版本（main.py）：
 
+![普通版本](http://upload-images.jianshu.io/upload_images/576195-ebb3e6782df3c0b3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+
+优化版本(main_cv.py)：
+
+![优化版本](http://upload-images.jianshu.io/upload_images/576195-5f5ced00075de3cd.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 调试时，修改 debug 为 True，真实运行时，设置为 False。停顿时间设置为 2s，如果电脑运算速度太快，保险起见可以设置为 2s。
 
@@ -26,6 +45,12 @@
 1. 使用 adb 跳
 
 ## 更新日志
+
+**2018-01-04**
+
+由于微信的小游戏的更新，基于背景 hsv 查找极点的方式，对于亮色背景，已经不再适用。
+
+更新为使用轮廓区域获取顶点，再由商高定理计算中心点坐标。
 
 **2018-01-01**
 
@@ -97,9 +122,13 @@
 
 设备打开跳一跳小游戏，并点击开始，之后：
 
+    # 普通版本(使用去除的背景的方式进行极点查找)
     $ python main.py
-    
-    
+
+    # 优化版本(使用Canny算子找顶点，使用直角定理找极点)
+    $ python main_cv.py
+
+
 ### 调试说明
 
 修改 debug 为 true 将进入启动调试模式。
@@ -112,7 +141,7 @@
 
 根据不同的手机型号（主要是屏幕分辨率）可能需要修改的几个地方：
 
-1. debug
+1. 请关闭手机的悬浮球，或者将其放置于屏幕最下方中间位置，以防止干扰。
 1. 指定 screenshot_directory 为截图保存路径。程序运行时，可以随时打开此目录查看其中生成的图片。
 1. 函数 find_hero(self) 中小人色取的是紫黑色：self.pixels[x, y] == (56, 56, 97, 255)。不知道不同手机显示的颜色是否一样。
 1. 函数 get_background_hsv(self) 中获取背景色的坐标，代码中为 (10, 800)。此参数是一个大概位于您手机屏幕竖直方向中间的某个点，确保此点一直是背景。大致坐标为(10, self.h * 0.42)，即(10, 屏幕高 * 0.42)，目前屏幕已经做了自适应，一般无需再设置。

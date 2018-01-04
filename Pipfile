@@ -12,3 +12,6 @@ name = "pypi"
 [packages]
 
 pillow = "*"
+opencv-python = "*"
+numpy = "*"
+jsbeautifier = "*"
