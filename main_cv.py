@@ -91,10 +91,10 @@ class Otsu(object):
             pow(center_pos[1] - self.hero_pos[1], 2)
         ))
         print('distance:', distance)
-        random_percent = numpy.random.randint(13988,14111) / 10000.0
+        random_percent = numpy.random.randint(13700,13780) / 10000.0
         length_time = distance * random_percent
 
-        holding = int(min(950, max(length_time, 300)))
+        holding = int(min(950, max(length_time, 230)))
         print('holding: ', holding)
 
         # dray images for debugging
@@ -156,7 +156,7 @@ while True:
             x2, y2 = rand_x(), rand_y()
             run_cmd('adb shell input swipe {0} {1} {2} {3} {4}'.format(
                 x1, y1, x2, y2, holding))
-            time.sleep(1.3 + numpy.random.random())
+            time.sleep(0.6 + numpy.random.random())
     except KeyboardInterrupt:
         raise KeyboardInterrupt
     except:
